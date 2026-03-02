@@ -7,7 +7,7 @@
 #include "SDL2/SDL.h"
 #include "renderer.hpp"
 
-#define FPS 5
+#define FPS 60
 #define FRAME_TIME 1000 / FPS
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 800

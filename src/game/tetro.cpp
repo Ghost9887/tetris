@@ -29,7 +29,7 @@ Tetro::Tetro(char shape) :
     }
 }
 
-void Tetro::draw_tetro(SDL_Renderer *rnd, std::vector<std::vector<Cell>> *cells) {
+void Tetro::draw_tetro(SDL_Renderer *rnd, const std::vector<std::vector<Cell>> *cells) {
     SDL_SetRenderDrawColor(rnd, colour.r, colour.g, colour.b, colour.a);
     SDL_RenderFillRect(rnd, &cells->at(row).at(column).rect);
 }
@@ -67,4 +67,3 @@ void Tetro::move_right() {
 void Tetro::move_left() {
     if (not_out_of_bounds(Left)) column--;
 }
-

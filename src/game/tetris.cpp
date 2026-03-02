@@ -9,6 +9,9 @@ void run(Renderer *renderer) {
 
     SDL_Event event;
     bool running = true;
+    
+    Uint32 lastFallTime = SDL_GetTicks(); 
+    const Uint32 fallDelay = 500;
 
     while (running) {
         Uint32 frame_start = SDL_GetTicks();
@@ -38,7 +41,12 @@ void run(Renderer *renderer) {
 
         board.draw_board(rnd);
         tetro.draw_tetro(rnd, board.get_board());
-        tetro.move_down();
+
+        Uint32 now = SDL_GetTicks();
+        if (now - lastFallTime >= fallDelay) {
+            tetro.move_down();
+            lastFallTime = now;
+        }
 
         SDL_SetRenderTarget(rnd, NULL);
         SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
