@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include "board.hpp"
+#include "tetro.hpp"
 
 void run(Renderer *renderer);
 

@@ -9,9 +9,9 @@ public:
     Board();
     ~Board() = default;
     void draw_board(SDL_Renderer *rnd);
-    std::vector<Cell> *get_cells();
+    std::vector<std::vector<Cell>> *get_board();
 private:
-    std::vector<Cell> cells;
+    std::vector<std::vector<Cell>> cells;
 };
 
 #endif
