@@ -9,11 +9,13 @@ void run(Renderer *renderer) {
 
     SDL_Event event;
     bool running = true;
+    bool moved_down;
     
     Uint32 lastFallTime = SDL_GetTicks(); 
     const Uint32 fallDelay = 500;
 
     while (running) {
+        moved_down = false;
         Uint32 frame_start = SDL_GetTicks();
 
         while(SDL_PollEvent(&event) != 0) {
@@ -28,7 +30,10 @@ void run(Renderer *renderer) {
                         tetro.move_right();
                         break;
                     case SDLK_DOWN:
-                        tetro.move_down();
+                        if (!moved_down) {
+                            tetro.move_down();
+                            moved_down = true;
+                        }
                         break;
                     default: break;
                 }
@@ -43,7 +48,7 @@ void run(Renderer *renderer) {
         tetro.draw_tetro(rnd, board.get_board());
 
         Uint32 now = SDL_GetTicks();
-        if (now - lastFallTime >= fallDelay) {
+        if (now - lastFallTime >= fallDelay && !moved_down) {
             tetro.move_down();
             lastFallTime = now;
         }
