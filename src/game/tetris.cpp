@@ -11,14 +11,13 @@ void run(Renderer *renderer) {
     bool running = true;
 
     while (running) {
+        Uint32 frame_start = SDL_GetTicks();
 
         while(SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
         }
-
-        Uint32 frame_start = SDL_GetTicks();
 
         SDL_SetRenderTarget(rnd, canvas);
         SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255); 
@@ -31,7 +30,6 @@ void run(Renderer *renderer) {
         SDL_SetRenderTarget(rnd, NULL);
         SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255);
         SDL_RenderClear(rnd);
-
         SDL_RenderCopy(rnd, canvas, NULL, NULL);
         SDL_RenderPresent(rnd);
 
