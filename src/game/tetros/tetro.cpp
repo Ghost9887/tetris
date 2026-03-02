@@ -49,15 +49,22 @@ bool Tetro::not_out_of_bounds(Direction dir) {
             break;
         default: break;
     }
-    std::cout << "Row: " << row << '\n';
     return 
         next_row < ROWS
-        && next_row > 0
+        && next_row >= 0
         && next_column < COLUMNS
-        && next_column > 0;
+        && next_column >= 0;
 }
 
 void Tetro::move_down() {
     if (not_out_of_bounds(Down)) row++;
+}
+
+void Tetro::move_right() {
+    if (not_out_of_bounds(Right)) column++;
+}
+
+void Tetro::move_left() {
+    if (not_out_of_bounds(Left)) column--;
 }
 

@@ -12,6 +12,8 @@ public:
     void draw_tetro(SDL_Renderer *rnd, std::vector<std::vector<Cell>> *cells);
     bool not_out_of_bounds(Direction dir);
     void move_down();
+    void move_right();
+    void move_left();
 private:
     int column; //x
     int row; //y

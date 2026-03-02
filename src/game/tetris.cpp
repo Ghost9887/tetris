@@ -16,6 +16,19 @@ void run(Renderer *renderer) {
         while(SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 running = false;
+            }else if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                    case SDLK_LEFT:
+                        tetro.move_left();
+                        break;
+                    case SDLK_RIGHT:
+                        tetro.move_right();
+                        break;
+                    case SDLK_DOWN:
+                        tetro.move_down();
+                        break;
+                    default: break;
+                }
             }
         }
 
