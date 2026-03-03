@@ -33,15 +33,21 @@ void run(Renderer *renderer) {
                 running = false;
             }else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
+                    case SDLK_SPACE:
+                        player.get_current_tetro()->hard_drop(tetros);
+                        break;
+                    case SDLK_r:
+                        player.get_current_tetro()->rotate(tetros);
+                        break;
                     case SDLK_LEFT:
-                        Tetro::move(*player.get_current_tetro(), Left, tetros);
+                        player.get_current_tetro()->move(Left, tetros);
                         break;
                     case SDLK_RIGHT:
-                        Tetro::move(*player.get_current_tetro(), Right, tetros);
+                        player.get_current_tetro()->move(Right, tetros);
                         break;
                     case SDLK_DOWN:
                         if (!moved_down) {
-                            Tetro::move(*player.get_current_tetro(), Down, tetros);
+                            player.get_current_tetro()->move(Down, tetros);
                             moved_down = true;
                         }
                         break;
@@ -59,7 +65,7 @@ void run(Renderer *renderer) {
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {
-            Tetro::move(*player.get_current_tetro(), Down, tetros);
+            player.get_current_tetro()->move(Down, tetros);
             lastFallTime = now;
         }
 

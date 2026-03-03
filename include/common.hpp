@@ -21,6 +21,7 @@
 #define Y_PADDING (SCREEN_HEIGHT / 2) - ((ROWS * CELL_SIZE) / 2)
 
 typedef enum {
+    Rotation,
     Down,
     Right,
     Left

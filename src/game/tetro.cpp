@@ -1,7 +1,7 @@
 #include "tetro.hpp"
 
 Tetro::Tetro(char id) :
-    column(COLUMNS / 2), row(0), id(id), shape(), colour(), fixed(false) 
+    column(COLUMNS / 2), row(0), id(id), shape(), colour(), fixed(false), rotation_state(1) 
 {
     switch (id) {
         case 'i':
@@ -107,9 +107,9 @@ Tetro Tetro::create_random_tetro() {
     }
 }
 
-bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tetro> &tetros) {
-    int next_row = tetro.row;
-    int next_column = tetro.column;
+bool Tetro::check_collision(Direction dir, const std::vector<Tetro> &tetros) {
+    int next_row = row;
+    int next_column = column;
     switch (dir) {
         case Down:
             next_row++;
@@ -126,14 +126,14 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tet
     //bounds
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (tetro.shape[i][j] == 1) {
+            if (shape[i][j] == 1) {
                 int next_row_sub = next_row + i;
                 int next_column_sub = next_column + j;
                 if (next_row_sub >= ROWS || next_column_sub < 0 || next_column_sub >= COLUMNS ) {
                     if (dir == Down) {
-                        tetro.set_fixed(true);
+                        set_fixed(true);
                     }
-                    return false;
+                    return true;
                 }
             }
         }
@@ -142,7 +142,7 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tet
     //other tetros
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (tetro.shape[i][j] == 1) {
+            if (shape[i][j] == 1) {
                 int current_next_row = next_row + i;
                 int current_next_column = next_column + j;
                 for (int t = 0; t < tetros.size() - 1; t++) {
@@ -153,9 +153,9 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tet
                                 int tetro_column = tetros.at(t).column + l;
                                 if (current_next_row == tetro_row && current_next_column == tetro_column) {
                                     if (dir == Down) {
-                                        tetro.set_fixed(true);
+                                        set_fixed(true);
                                     }
-                                    return false;
+                                    return true;
                                 }
                             }
                         }
@@ -165,21 +165,285 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tet
         }
     }
 
-    return true;
+    return false;
 }
 
-void Tetro::move(Tetro &tetro, Direction dir, const std::vector<Tetro> &tetros) {
+void Tetro::move(Direction dir, const std::vector<Tetro> &tetros) {
     switch (dir) {
         case Down:
-            if (tetro.not_out_of_bounds(Down, tetro, tetros)) tetro.row++;
+            if (!check_collision(Down, tetros)) row++;
             break;
         case Right:
-            if (tetro.not_out_of_bounds(Right, tetro, tetros)) tetro.column++;
+            if (!check_collision(Right, tetros)) column++;
             break;
         case Left:
-            if (tetro.not_out_of_bounds(Left, tetro, tetros)) tetro.column--;
+            if (!check_collision(Left, tetros)) column--;
             break;
         default: break;
+    }
+}
+
+void Tetro::rotate(const std::vector<Tetro> &tetros) {
+
+    int original_row = row;
+    int original_column = column;
+    std::array<std::array<int, 4>, 4> original_shape = shape;
+
+    if (id == 'i') {
+        switch (rotation_state) {
+            case 1:
+                shape = {{
+                    {0, 0, 0, 0},
+                    {1, 1, 1, 1},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 2;
+                    return;
+                }
+                break;
+            case 2:
+                shape = {{
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 1;
+                    return;
+                }
+                break;
+            default: break;
+        }
+    }
+    else if (id == 'j') {
+        switch (rotation_state) {
+            case 1:
+                shape = {{
+                    {1, 0, 0, 0},
+                    {1, 1, 1, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 2;
+                    return;
+                }
+                break;
+            case 2:
+                shape = {{
+                    {0, 1, 1, 0},
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 3;
+                    return;
+                }
+                break;
+            case 3:
+                shape = {{
+                    {1, 1, 1, 0},
+                    {0, 0, 1, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 4;
+                    return;
+                }
+                break;
+            case 4:
+                shape = {{
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {1, 1, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 1;
+                    return;
+                }
+                break;
+            default: break;
+        }
+    }
+    else if (id == 'l') {
+        switch (rotation_state) {
+            case 1:
+                shape = {{
+                    {0, 0, 1, 0},
+                    {1, 1, 1, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 2;
+                    return;
+                }
+                break;
+            case 2:
+                shape = {{
+                    {1, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 3;
+                    return;
+                }
+                break;
+            case 3:
+                shape = {{
+                    {1, 1, 1, 0},
+                    {1, 0, 0, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 4;
+                    return;
+                }
+                break;
+            case 4:
+                shape = {{
+                    {1, 0, 0, 0},
+                    {1, 0, 0, 0},
+                    {1, 1, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 1;
+                    return;
+                }
+                break;
+            default: break;
+        }
+    }
+    else if (id == 'z') {
+        switch (rotation_state) {
+            case 1:
+                shape = {{
+                    {0, 1, 0, 0},
+                    {1, 1, 0, 0},
+                    {1, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 2;
+                    return;
+                }
+                break;
+            case 2:
+                shape = {{
+                    {1, 1, 0, 0},
+                    {0, 1, 1, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 1;
+                    return;
+                }
+                break;
+            default: break;
+        }
+    }
+    else if (id == 's') {
+        switch (rotation_state) {
+            case 1:
+                shape = {{
+                    {1, 0, 0, 0},
+                    {1, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 2;
+                    return;
+                }
+                break;
+            case 2:
+                shape = {{
+                    {0, 1, 1, 0},
+                    {1, 1, 0, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 1;
+                    return;
+                }
+                break;
+            default: break;
+        }
+    }
+    else if (id == 't') {
+        switch (rotation_state) {
+            case 1:
+                shape = {{
+                    {1, 0, 0, 0},
+                    {1, 1, 0, 0},
+                    {1, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 2;
+                    return;
+                }
+                break;
+            case 2:
+                shape = {{
+                    {1, 1, 1, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 3;
+                    return;
+                }
+                break;
+            case 3:
+                shape = {{
+                    {0, 1, 0, 0},
+                    {1, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 4;
+                    return;
+                }
+                break;
+            case 4:
+                shape = {{
+                    {0, 1, 0, 0},
+                    {1, 1, 1, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}
+                }};
+                if (!check_collision(Rotation, tetros)) {
+                    rotation_state = 1;
+                    return;
+                }
+                break;
+            default: break;
+        }
+    }
+
+    row = original_row;
+    column = original_column;
+    shape = original_shape;
+}
+
+void Tetro::hard_drop(const std::vector<Tetro> &tetros) {
+    while (!fixed) {
+        if (!check_collision(Down, tetros)) row++;
     }
 }
 
