@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <array>
+#include <ctime>
+#include <cstdlib>
 #include "SDL2/SDL.h"
 #include "renderer.hpp"
 

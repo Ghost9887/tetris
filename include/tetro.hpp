@@ -6,19 +6,22 @@
 
 class Tetro{
 public:
-    Tetro(char shape);
+    Tetro(char id);
     ~Tetro() = default;
     Tetro *get_tetro();
-    void draw_tetro(SDL_Renderer *rnd, const std::vector<std::vector<Cell>> *cells);
-    bool not_out_of_bounds(Direction dir);
-    void move_down();
-    void move_right();
-    void move_left();
+    static Tetro create_random_tetro();
+    static void draw_tetros(const std::vector<Tetro> &tetros, SDL_Renderer *rnd, const std::vector<std::vector<Cell>> *cells);
+    static void move(Tetro &tetro, Direction dir);
+    void set_fixed(bool value);
+    bool is_fixed();
 private:
     int column; //x
     int row; //y
-    char shape;
+    char id;
+    std::array<std::array<int, 4>, 4> shape;
     SDL_Color colour;
+    bool not_out_of_bounds(Direction dir, Tetro &tetro);
+    bool fixed;
 };
 
 #endif

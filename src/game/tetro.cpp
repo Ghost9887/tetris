@@ -1,42 +1,115 @@
 #include "tetro.hpp"
 
-Tetro::Tetro(char shape) :
-    column(COLUMNS / 2), row(0), shape(shape), colour() 
+Tetro::Tetro(char id) :
+    column(COLUMNS / 2), row(0), id(id), shape(), colour(), fixed(false) 
 {
-    switch (shape) {
+    switch (id) {
         case 'i':
             colour = { 0, 255, 255, 255 };
+            shape = {{
+                {0, 1, 0, 0},
+                {0, 1, 0, 0},
+                {0, 1, 0, 0},
+                {0, 1, 0, 0}
+            }};
             break;
         case 'o':
             colour = { 255, 255, 0, 255 };
+            shape = {{
+                {1, 1, 0, 0},
+                {1, 1, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+            }};
             break;
         case 't':
             colour = { 255, 20, 147, 255 };
+            shape = {{
+                {0, 1, 0, 0},
+                {1, 1, 1, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+            }};
             break;
         case 'j':
             colour = { 0, 0, 255, 255 };
+            shape = {{
+                {0, 1, 0, 0},
+                {0, 1, 0, 0},
+                {1, 1, 0, 0},
+                {0, 0, 0, 0}
+            }};
             break;
         case 'l':
             colour = { 255, 140, 0, 255 };
+            shape = {{
+                {1, 0, 0, 0},
+                {1, 0, 0, 0},
+                {1, 1, 0, 0},
+                {0, 0, 0, 0}
+            }};
             break;
         case 's':
             colour = { 0, 255, 0, 255 };
+            shape = {{
+                {0, 1, 1, 0},
+                {1, 1, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+            }};
             break;
         case 'z':
             colour = { 255, 0, 0, 255 };
+            shape = {{
+                {1, 1, 0, 0},
+                {0, 1, 1, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+            }};
             break;
         default: break;
     }
 }
 
-void Tetro::draw_tetro(SDL_Renderer *rnd, const std::vector<std::vector<Cell>> *cells) {
-    SDL_SetRenderDrawColor(rnd, colour.r, colour.g, colour.b, colour.a);
-    SDL_RenderFillRect(rnd, &cells->at(row).at(column).rect);
+void Tetro::draw_tetros(const std::vector<Tetro> &tetros, SDL_Renderer *rnd, const std::vector<std::vector<Cell>> *cells) {
+    for (int x = 0; x < tetros.size(); x++) {
+        SDL_SetRenderDrawColor(rnd, tetros.at(x).colour.r, tetros.at(x).colour.g, tetros.at(x).colour.b, tetros.at(x).colour.a);
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (tetros.at(x).shape[i][j] == 1) {
+                    SDL_RenderFillRect(rnd, &cells->at(tetros.at(x).row + i).at(tetros.at(x).column + j).rect);
+                }
+            }
+        }
+    }
 }
 
-bool Tetro::not_out_of_bounds(Direction dir) {
-    int next_row = row;
-    int next_column = column;
+Tetro Tetro::create_random_tetro() {
+    srand(time(0));
+    int random_number = rand() % 7 + 1;
+
+    switch (random_number) {
+        case 1:
+            return Tetro('i');
+        case 2:
+            return Tetro('o');
+        case 3:
+            return Tetro('z');
+        case 4:
+            return Tetro('s');
+        case 5:
+            return Tetro('l');
+        case 6:
+            return Tetro('j');
+        case 7:
+            return Tetro('t');
+        default: return Tetro('i');
+    }
+}
+
+bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro) {
+    int next_row = tetro.row;
+    int next_column = tetro.column;
     switch (dir) {
         case Down:
             next_row++;
@@ -49,21 +122,45 @@ bool Tetro::not_out_of_bounds(Direction dir) {
             break;
         default: break;
     }
-    return 
-        next_row < ROWS
-        && next_row >= 0
-        && next_column < COLUMNS
-        && next_column >= 0;
+    
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (tetro.shape[i][j] == 1) {
+                int next_row_sub = next_row + i;
+                int next_column_sub = next_column + j;
+                if (next_row_sub >= ROWS ) {
+                    tetro.set_fixed(true);
+                    return false;
+                }else if (next_column_sub < 0 || next_column_sub >= COLUMNS) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
-void Tetro::move_down() {
-    if (not_out_of_bounds(Down)) row++;
+ 
+void Tetro::move(Tetro &tetro, Direction dir) {
+    switch (dir) {
+        case Down:
+            if (tetro.not_out_of_bounds(Down, tetro)) tetro.row++;
+            break;
+        case Right:
+            if (tetro.not_out_of_bounds(Right, tetro)) tetro.column++;
+            break;
+        case Left:
+            if (tetro.not_out_of_bounds(Left, tetro)) tetro.column--;
+            break;
+        default: break;
+    }
 }
 
-void Tetro::move_right() {
-    if (not_out_of_bounds(Right)) column++;
+void Tetro::set_fixed(bool value) {
+    fixed = value;
 }
 
-void Tetro::move_left() {
-    if (not_out_of_bounds(Left)) column--;
+bool Tetro::is_fixed() {
+    return fixed;
 }
