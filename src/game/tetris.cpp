@@ -20,13 +20,6 @@ void run(Renderer *renderer) {
     player.set_current_tetro(&tetros.back());
 
     while (running) {
-        SDL_SetRenderTarget(rnd, canvas);
-        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255); 
-        SDL_RenderClear(rnd);
-
-        board.draw_board(rnd);
-        Tetro::draw_tetros(tetros, rnd, board.get_board());
-
         if (player.get_current_tetro()->is_fixed()) {
             tetros.push_back(Tetro::create_random_tetro());
             player.set_current_tetro(&tetros.back());
@@ -57,6 +50,12 @@ void run(Renderer *renderer) {
             }
         }
         
+        SDL_SetRenderTarget(rnd, canvas);
+        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255); 
+        SDL_RenderClear(rnd);
+
+        board.draw_board(rnd);
+        Tetro::draw_tetros(tetros, rnd, board.get_board());
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {
