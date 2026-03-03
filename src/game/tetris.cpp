@@ -20,6 +20,12 @@ void run(Renderer *renderer) {
     player.set_current_tetro(&tetros.back());
 
     while (running) {
+        SDL_SetRenderTarget(rnd, canvas);
+        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255); 
+        SDL_RenderClear(rnd);
+
+        board.draw_board(rnd);
+        Tetro::draw_tetros(tetros, rnd, board.get_board());
 
         if (player.get_current_tetro()->is_fixed()) {
             tetros.push_back(Tetro::create_random_tetro());
@@ -35,14 +41,14 @@ void run(Renderer *renderer) {
             }else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_LEFT:
-                        Tetro::move(*player.get_current_tetro(), Left);
+                        Tetro::move(*player.get_current_tetro(), Left, tetros);
                         break;
                     case SDLK_RIGHT:
-                        Tetro::move(*player.get_current_tetro(), Right);
+                        Tetro::move(*player.get_current_tetro(), Right, tetros);
                         break;
                     case SDLK_DOWN:
                         if (!moved_down) {
-                            Tetro::move(*player.get_current_tetro(), Down);
+                            Tetro::move(*player.get_current_tetro(), Down, tetros);
                             moved_down = true;
                         }
                         break;
@@ -50,17 +56,11 @@ void run(Renderer *renderer) {
                 }
             }
         }
-
-        SDL_SetRenderTarget(rnd, canvas);
-        SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255); 
-        SDL_RenderClear(rnd);
-
-        board.draw_board(rnd);
-        Tetro::draw_tetros(tetros, rnd, board.get_board());
+        
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {
-            Tetro::move(*player.get_current_tetro(), Down);
+            Tetro::move(*player.get_current_tetro(), Down, tetros);
             lastFallTime = now;
         }
 

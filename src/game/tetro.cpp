@@ -71,13 +71,13 @@ Tetro::Tetro(char id) :
     }
 }
 
-void Tetro::draw_tetros(const std::vector<Tetro> &tetros, SDL_Renderer *rnd, const std::vector<std::vector<Cell>> *cells) {
+void Tetro::draw_tetros(const std::vector<Tetro> &tetros, SDL_Renderer *rnd, std::vector<std::vector<Cell>> &cells) {
     for (int x = 0; x < tetros.size(); x++) {
         SDL_SetRenderDrawColor(rnd, tetros.at(x).colour.r, tetros.at(x).colour.g, tetros.at(x).colour.b, tetros.at(x).colour.a);
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 if (tetros.at(x).shape[i][j] == 1) {
-                    SDL_RenderFillRect(rnd, &cells->at(tetros.at(x).row + i).at(tetros.at(x).column + j).rect);
+                    SDL_RenderFillRect(rnd, &cells.at(tetros.at(x).row + i).at(tetros.at(x).column + j).rect);
                 }
             }
         }
@@ -107,7 +107,7 @@ Tetro Tetro::create_random_tetro() {
     }
 }
 
-bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro) {
+bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tetro> &tetros) {
     int next_row = tetro.row;
     int next_column = tetro.column;
     switch (dir) {
@@ -123,6 +123,7 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro) {
         default: break;
     }
     
+    //bounds
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (tetro.shape[i][j] == 1) {
@@ -138,20 +139,46 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro) {
         }
     }
 
+    //other tetros
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (tetro.shape[i][j] == 1) {
+                int current_next_row = next_row + i;
+                int current_next_column = next_column + j;
+                for (int t = 0; t < tetros.size() - 1; t++) {
+                    for (int k = 0; k < 4; k++) {
+                        for (int l = 0; l < 4; l++) {
+                            if (tetros.at(t).shape[k][l] == 1) {
+                                int tetro_row = tetros.at(t).row + k;
+                                int tetro_column = tetros.at(t).column + l;
+                                if (current_next_row == tetro_row && current_next_column == tetro_column) {
+                                    if (dir == Down) {
+                                        tetro.set_fixed(true);
+                                        return false;
+                                    }
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     return true;
 }
 
- 
-void Tetro::move(Tetro &tetro, Direction dir) {
+void Tetro::move(Tetro &tetro, Direction dir, const std::vector<Tetro> &tetros) {
     switch (dir) {
         case Down:
-            if (tetro.not_out_of_bounds(Down, tetro)) tetro.row++;
+            if (tetro.not_out_of_bounds(Down, tetro, tetros)) tetro.row++;
             break;
         case Right:
-            if (tetro.not_out_of_bounds(Right, tetro)) tetro.column++;
+            if (tetro.not_out_of_bounds(Right, tetro, tetros)) tetro.column++;
             break;
         case Left:
-            if (tetro.not_out_of_bounds(Left, tetro)) tetro.column--;
+            if (tetro.not_out_of_bounds(Left, tetro, tetros)) tetro.column--;
             break;
         default: break;
     }

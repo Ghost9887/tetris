@@ -11,8 +11,8 @@ Board::Board() : cells()
     }
 }
 
-std::vector<std::vector<Cell>> *Board::get_board() {
-    return &cells;
+std::vector<std::vector<Cell>> &Board::get_board() {
+    return cells;
 }
 
 void Board::draw_board(SDL_Renderer *rnd) {
