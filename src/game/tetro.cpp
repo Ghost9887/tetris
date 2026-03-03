@@ -129,10 +129,10 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tet
             if (tetro.shape[i][j] == 1) {
                 int next_row_sub = next_row + i;
                 int next_column_sub = next_column + j;
-                if (next_row_sub >= ROWS ) {
-                    tetro.set_fixed(true);
-                    return false;
-                }else if (next_column_sub < 0 || next_column_sub >= COLUMNS) {
+                if (next_row_sub >= ROWS || next_column_sub < 0 || next_column_sub >= COLUMNS ) {
+                    if (dir == Down) {
+                        tetro.set_fixed(true);
+                    }
                     return false;
                 }
             }
@@ -154,7 +154,6 @@ bool Tetro::not_out_of_bounds(Direction dir, Tetro &tetro, const std::vector<Tet
                                 if (current_next_row == tetro_row && current_next_column == tetro_column) {
                                     if (dir == Down) {
                                         tetro.set_fixed(true);
-                                        return false;
                                     }
                                     return false;
                                 }
