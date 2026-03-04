@@ -72,12 +72,13 @@ Tetro::Tetro(char id) :
 }
 
 void Tetro::draw_tetros(const std::vector<Tetro> &tetros, SDL_Renderer *rnd, std::vector<std::vector<Cell>> &cells) {
-    for (int x = 0; x < tetros.size(); x++) {
-        SDL_SetRenderDrawColor(rnd, tetros.at(x).colour.r, tetros.at(x).colour.g, tetros.at(x).colour.b, tetros.at(x).colour.a);
+    for (int t = 0; t < tetros.size(); t++) {
+        SDL_SetRenderDrawColor(rnd, tetros.at(t).colour.r, tetros.at(t).colour.g, tetros.at(t).colour.b, tetros.at(t).colour.a);
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                if (tetros.at(x).shape[i][j] == 1) {
-                    SDL_RenderFillRect(rnd, &cells.at(tetros.at(x).row + i).at(tetros.at(x).column + j).rect);
+                if (tetros.at(t).shape[i][j] == 1) {
+                    SDL_RenderFillRect(rnd, &cells.at(tetros.at(t).row + i).at(tetros.at(t).column + j).rect);
+                    cells.at(tetros.at(t).row + i).at(tetros.at(t).column + j).active = true;
                 }
             }
         }
@@ -123,28 +124,19 @@ bool Tetro::check_collision(Direction dir, const std::vector<Tetro> &tetros) {
         default: break;
     }
     
-    //bounds
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (shape[i][j] == 1) {
-                int next_row_sub = next_row + i;
-                int next_column_sub = next_column + j;
-                if (next_row_sub >= ROWS || next_column_sub < 0 || next_column_sub >= COLUMNS ) {
-                    if (dir == Down) {
-                        set_fixed(true);
-                    }
-                    return true;
-                }
-            }
-        }
-    }
-
-    //other tetros
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (shape[i][j] == 1) {
                 int current_next_row = next_row + i;
                 int current_next_column = next_column + j;
+                //bounds
+                if (current_next_row >= ROWS || current_next_column < 0 || current_next_column >= COLUMNS ) {
+                    if (dir == Down) {
+                        fixed = true;
+                    }
+                    return true;
+                }
+                //other tetros
                 for (int t = 0; t < tetros.size() - 1; t++) {
                     for (int k = 0; k < 4; k++) {
                         for (int l = 0; l < 4; l++) {
@@ -153,7 +145,7 @@ bool Tetro::check_collision(Direction dir, const std::vector<Tetro> &tetros) {
                                 int tetro_column = tetros.at(t).column + l;
                                 if (current_next_row == tetro_row && current_next_column == tetro_column) {
                                     if (dir == Down) {
-                                        set_fixed(true);
+                                        fixed = true;
                                     }
                                     return true;
                                 }
@@ -180,6 +172,57 @@ void Tetro::move(Direction dir, const std::vector<Tetro> &tetros) {
             if (!check_collision(Left, tetros)) column--;
             break;
         default: break;
+    }
+}
+
+void Tetro::hard_drop(const std::vector<Tetro> &tetros) {
+    while (!fixed) {
+        if (!check_collision(Down, tetros)) row++;
+    }
+}
+
+bool Tetro::is_fixed() {
+    return fixed;
+}
+
+void Tetro::draw_reflection(const std::vector<std::vector<Cell>> &cells, const std::vector<Tetro> &tetros, SDL_Renderer *rnd) {
+    Tetro temp_tetro = *this;
+    while (!temp_tetro.check_collision(Down, tetros)) {
+        temp_tetro.row++;
+    } 
+    SDL_Rect rect = { temp_tetro.row, temp_tetro.column, CELL_SIZE, CELL_SIZE };
+    SDL_SetRenderDrawColor(rnd, temp_tetro.colour.r, temp_tetro.colour.g, temp_tetro.colour.b, temp_tetro.colour.a);
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (temp_tetro.shape[i][j] == 1) {
+                SDL_RenderDrawRect(rnd, &cells.at(temp_tetro.row + i).at(temp_tetro.column + j).rect);
+            }
+        }
+    }
+}
+
+int Tetro::get_value_in_shape(int i, int j) {
+    return shape[i][j];
+}
+
+void Tetro::set_value_in_shape(int i, int j, int value) {
+    shape[i][j] = value;
+}
+
+int Tetro::get_row() {
+    return row;
+}
+
+int Tetro::get_column() {
+    return column;
+}
+
+
+//TODO: Fix order is fucking me
+void Tetro::move_tetros_down(std::vector<Tetro> &tetros) {
+    for (int t = 0; t < tetros.size(); t++) {
+        tetros.at(t).fixed = false;
+        tetros.at(t).hard_drop(tetros);
     }
 }
 
@@ -439,34 +482,4 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
     row = original_row;
     column = original_column;
     shape = original_shape;
-}
-
-void Tetro::hard_drop(const std::vector<Tetro> &tetros) {
-    while (!fixed) {
-        if (!check_collision(Down, tetros)) row++;
-    }
-}
-
-void Tetro::set_fixed(bool value) {
-    fixed = value;
-}
-
-bool Tetro::is_fixed() {
-    return fixed;
-}
-
-void Tetro::draw_reflection(const std::vector<std::vector<Cell>> &cells, const std::vector<Tetro> &tetros, SDL_Renderer *rnd) {
-    Tetro temp_tetro = *this;
-    while (!temp_tetro.check_collision(Down, tetros)) {
-        temp_tetro.row++;
-    } 
-    SDL_Rect rect = { temp_tetro.row, temp_tetro.column, CELL_SIZE, CELL_SIZE };
-    SDL_SetRenderDrawColor(rnd, temp_tetro.colour.r, temp_tetro.colour.g, temp_tetro.colour.b, temp_tetro.colour.a);
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (temp_tetro.shape[i][j] == 1) {
-                SDL_RenderDrawRect(rnd, &cells.at(temp_tetro.row + i).at(temp_tetro.column + j).rect);
-            }
-        }
-    }
 }

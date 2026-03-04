@@ -26,6 +26,7 @@ void Board::draw_board(SDL_Renderer *rnd) {
     for (int y = 0; y < ROWS; y++) {
         for (int x = 0; x < COLUMNS; x++) {
             SDL_RenderDrawRect(rnd, &cells.at(y).at(x).rect);
+            cells.at(y).at(x).active = false;
         }
     }
     draw_border(rnd);

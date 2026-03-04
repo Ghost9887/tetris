@@ -1,5 +1,31 @@
 #include "tetris.hpp"
 
+bool clear_row(std::vector<Tetro> &tetros, std::vector<std::vector<Cell>> &cells) {
+    bool flag = false;
+    for (int row = 0; row < ROWS; row++) {
+        int count = 0;
+        int column = 0;
+        for (; column < COLUMNS; column++) {
+            if (cells[row][column].active) count++;
+        }
+        if (count >= COLUMNS) {
+            for (int t = 0; t < tetros.size(); t++) {
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        if (tetros.at(t).get_value_in_shape(i, j) == 1) {
+                            if (tetros.at(t).get_row() + i == row) {
+                                tetros.at(t).set_value_in_shape(i, j, 0);
+                                flag = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return flag;
+}
+
 void run(Renderer *renderer) {
     SDL_Renderer *rnd = renderer->get_renderer();
     SDL_Texture *canvas = renderer->get_canvas();
@@ -21,6 +47,7 @@ void run(Renderer *renderer) {
 
     while (running) {
         if (player.get_current_tetro()->is_fixed()) {
+            if (clear_row(tetros, board.get_board())) Tetro::move_tetros_down(tetros);
             tetros.push_back(Tetro::create_random_tetro());
             player.set_current_tetro(&tetros.back());
         }
@@ -35,6 +62,7 @@ void run(Renderer *renderer) {
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
                         player.get_current_tetro()->hard_drop(tetros);
+                        moved_down = true;
                         break;
                     case SDLK_r:
                         player.get_current_tetro()->rotate(tetros);

@@ -5,6 +5,7 @@
 
 typedef struct {
     SDL_Rect rect;
+    bool active;
 }Cell;
 
 Cell create_cell(int x, int y);
