@@ -62,6 +62,7 @@ void run(Renderer *renderer) {
 
         board.draw_board(rnd);
         Tetro::draw_tetros(tetros, rnd, board.get_board());
+        player.get_current_tetro()->draw_reflection(board.get_board(), tetros, rnd);
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {

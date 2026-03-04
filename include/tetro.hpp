@@ -15,7 +15,8 @@ public:
     void rotate(const std::vector<Tetro> &tetros);
     void hard_drop(const std::vector<Tetro> &tetros);
     void set_fixed(bool value);
-    bool is_fixed();
+    bool is_fixed();    
+    void draw_reflection(const std::vector<std::vector<Cell>> &cells, const std::vector<Tetro> &tetros, SDL_Renderer *rnd);
 private:
     int column; //x
     int row; //y

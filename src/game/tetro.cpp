@@ -454,3 +454,19 @@ void Tetro::set_fixed(bool value) {
 bool Tetro::is_fixed() {
     return fixed;
 }
+
+void Tetro::draw_reflection(const std::vector<std::vector<Cell>> &cells, const std::vector<Tetro> &tetros, SDL_Renderer *rnd) {
+    Tetro temp_tetro = *this;
+    while (!temp_tetro.check_collision(Down, tetros)) {
+        temp_tetro.row++;
+    } 
+    SDL_Rect rect = { temp_tetro.row, temp_tetro.column, CELL_SIZE, CELL_SIZE };
+    SDL_SetRenderDrawColor(rnd, temp_tetro.colour.r, temp_tetro.colour.g, temp_tetro.colour.b, temp_tetro.colour.a);
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (temp_tetro.shape[i][j] == 1) {
+                SDL_RenderDrawRect(rnd, &cells.at(temp_tetro.row + i).at(temp_tetro.column + j).rect);
+            }
+        }
+    }
+}
