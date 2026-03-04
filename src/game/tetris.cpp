@@ -47,7 +47,10 @@ void run(Renderer *renderer) {
 
     while (running) {
         if (player.get_current_tetro()->is_fixed()) {
-            if (clear_row(tetros, board.get_board())) Tetro::move_tetros_down(tetros);
+            if (clear_row(tetros, board.get_board())) {
+                Tetro::remove_empty_tetros(tetros);
+                Tetro::move_tetros_down(tetros);
+            }
             tetros.push_back(Tetro::create_random_tetro());
             player.set_current_tetro(&tetros.back());
         }

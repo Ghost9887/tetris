@@ -217,6 +217,17 @@ int Tetro::get_column() {
     return column;
 }
 
+void Tetro::remove_empty_tetros(std::vector<Tetro> &tetros) {
+    for (int t = 0; t < tetros.size(); t++) {
+        int count = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (tetros.at(t).shape[i][j] == 1) count++;
+            }
+        }
+        if (count == 0) tetros.erase(tetros.begin() + t);
+    }
+}
 
 //TODO: Fix order is fucking me
 void Tetro::move_tetros_down(std::vector<Tetro> &tetros) {
