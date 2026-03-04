@@ -231,10 +231,6 @@ void Tetro::remove_empty_tetros(std::vector<Tetro> &tetros) {
 
 //TODO: Fix order is fucking me
 void Tetro::move_tetros_down(std::vector<Tetro> &tetros) {
-    for (int t = 0; t < tetros.size(); t++) {
-        tetros.at(t).fixed = false;
-        tetros.at(t).hard_drop(tetros);
-    }
 }
 
 void Tetro::rotate(const std::vector<Tetro> &tetros) {
