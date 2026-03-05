@@ -31,12 +31,13 @@ void run(Renderer *renderer) {
     const Uint32 fallDelay = 500;
     
     Player player(Tetro::create_random_tetro());
+    player.get_next_tetro();
 
     while (running) {
         if (player.get_current_tetro().is_fixed()) {
             player.get_current_tetro().move_tetro_to_board(board.get_board());
             clear_row(board.get_board());
-            player.set_current_tetro(Tetro::create_random_tetro());
+            player.get_next_tetro();
         }
 
         moved_down = false;
@@ -51,8 +52,11 @@ void run(Renderer *renderer) {
                         player.get_current_tetro().hard_drop(board.get_board());
                         moved_down = true;
                         break;
-                    case SDLK_r:
+                    case SDLK_UP:
                         player.get_current_tetro().rotate(board.get_board());
+                        break;
+                    case SDLK_c:
+                        player.reserve_current_tetro();
                         break;
                     case SDLK_LEFT:
                         player.get_current_tetro().move(Left, board.get_board());
@@ -78,6 +82,7 @@ void run(Renderer *renderer) {
         renderer->draw_tetro(player.get_current_tetro(), board.get_board());
         renderer->draw_board(board.get_board());
         renderer->draw_reflection(board.get_board(), player.get_current_tetro());
+        renderer->draw_next_tetros(player.get_next_tetros());
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {

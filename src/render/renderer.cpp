@@ -90,6 +90,12 @@ void Renderer::draw_reflection(std::array<std::array<Cell, COLUMNS>, ROWS> &boar
     }
 }
 
+void Renderer::draw_reserved_tetro(Tetro &tetro) {
+}
+
+void Renderer::draw_next_tetros(std::queue<Tetro> &next_tetros) {
+}
+
 Renderer::~Renderer() {
     SDL_DestroyRenderer(rnd);
     SDL_DestroyWindow(window);

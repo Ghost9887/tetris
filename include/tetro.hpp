@@ -18,6 +18,8 @@ public:
     void set_value_in_shape(int i, int j, int value);
     int get_row();
     int get_column();
+    void set_row(int row);
+    void set_column(int column);
     void add_row();
     SDL_Color get_colour();
 private:

@@ -71,30 +71,23 @@ Tetro::Tetro(char id) :
     }
 }
 
-
-
 Tetro Tetro::create_random_tetro() {
-    srand(time(0));
-    int random_number = rand() % 7 + 1;
+    static std::mt19937 rng(std::random_device{}());
+    static std::uniform_int_distribution<int> dist(1, 7);
 
-    switch (random_number) {
-        case 1:
-            return Tetro('i');
-        case 2:
-            return Tetro('o');
-        case 3:
-            return Tetro('z');
-        case 4:
-            return Tetro('s');
-        case 5:
-            return Tetro('l');
-        case 6:
-            return Tetro('j');
-        case 7:
-            return Tetro('t');
-        default: return Tetro('i');
+    switch (dist(rng)) {
+        case 1: return Tetro('i');
+        case 2: return Tetro('o');
+        case 3: return Tetro('z');
+        case 4: return Tetro('s');
+        case 5: return Tetro('l');
+        case 6: return Tetro('j');
+        case 7: return Tetro('t');
     }
+
+    return Tetro('i');
 }
+
 
 bool Tetro::check_collision(Direction dir, const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
     int next_row = row;
@@ -190,6 +183,14 @@ int Tetro::get_row() {
 
 int Tetro::get_column() {
     return column;
+}
+
+void Tetro::set_row(int new_row) {
+    row = new_row;
+}
+
+void Tetro::set_column(int new_column) {
+    column = new_column;
 }
 
 void Tetro::add_row() {

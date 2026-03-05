@@ -14,6 +14,8 @@ public:
     void draw_board(std::array<std::array<Cell, COLUMNS>, ROWS> &board);
     void draw_tetro(Tetro &tetro, std::array<std::array<Cell, COLUMNS>, ROWS> &board);
     void draw_reflection(std::array<std::array<Cell, COLUMNS>, ROWS> &cells, Tetro &tetro);
+    void draw_reserved_tetro(Tetro &tetro);
+    void draw_next_tetros(std::queue<Tetro> &next_tetros);
 private:
     SDL_Window *window;
     SDL_Renderer *rnd;

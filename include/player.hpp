@@ -8,10 +8,15 @@ class Player {
 public:
     Player(Tetro tetro);
     ~Player() = default;
-    void set_current_tetro(Tetro tetro);
     Tetro &get_current_tetro();
+    void get_next_tetro();
+    void reserve_current_tetro();
+    std::queue<Tetro> &get_next_tetros();
 private:
     Tetro current_tetro;
+    std::queue<Tetro> next_tetros;
+    std::optional<Tetro> reserve_tetro;
+    bool reserved;
 };
 
 #endif
