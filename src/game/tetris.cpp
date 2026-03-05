@@ -22,8 +22,7 @@ void run(Renderer *renderer) {
     while (running) {
         if (player.get_current_tetro().is_fixed()) {
             player.get_current_tetro().move_tetro_to_board(board.get_board());
-            if (clear_row(board.get_board())) {
-            }
+            clear_row(board.get_board());
             player.set_current_tetro(Tetro::create_random_tetro());
         }
 

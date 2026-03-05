@@ -125,14 +125,14 @@ bool Tetro::check_collision(Direction dir, const std::array<std::array<Cell, COL
                     return true;
                 }
                 //other tetros
-                /*
-                else if (board[current_next_row + i][current_next_column + j].active) {
+                
+                else if (board[current_next_row][current_next_column].active) {
                     if (dir == Down) {
                         fixed = true;
                     }
                     return true;
                 }
-                */
+                
             }
         }
     }
