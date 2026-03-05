@@ -5,6 +5,7 @@
 #include "board.hpp"
 #include "tetro.hpp"
 #include "player.hpp"
+#include "renderer.hpp"
 
 void run(Renderer *renderer);
 

@@ -1,29 +1,7 @@
 #include "tetris.hpp"
 
 bool clear_row(std::vector<Tetro> &tetros, std::vector<std::vector<Cell>> &cells) {
-    bool flag = false;
-    for (int row = 0; row < ROWS; row++) {
-        int count = 0;
-        int column = 0;
-        for (; column < COLUMNS; column++) {
-            if (cells[row][column].active) count++;
-        }
-        if (count >= COLUMNS) {
-            for (int t = 0; t < tetros.size(); t++) {
-                for (int i = 0; i < 4; i++) {
-                    for (int j = 0; j < 4; j++) {
-                        if (tetros.at(t).get_value_in_shape(i, j) == 1) {
-                            if (tetros.at(t).get_row() + i == row) {
-                                tetros.at(t).set_value_in_shape(i, j, 0);
-                                flag = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return flag;
+    return false;
 }
 
 void run(Renderer *renderer) {
@@ -47,10 +25,12 @@ void run(Renderer *renderer) {
 
     while (running) {
         if (player.get_current_tetro()->is_fixed()) {
+            /*
             if (clear_row(tetros, board.get_board())) {
                 Tetro::remove_empty_tetros(tetros);
-                //Tetro::move_tetros_down(tetros);
+                Tetro::move_tetros_down(tetros);
             }
+            */
             tetros.push_back(Tetro::create_random_tetro());
             player.set_current_tetro(&tetros.back());
         }
@@ -91,9 +71,9 @@ void run(Renderer *renderer) {
         SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255); 
         SDL_RenderClear(rnd);
 
-        board.draw_board(rnd);
-        Tetro::draw_tetros(tetros, rnd, board.get_board());
-        player.get_current_tetro()->draw_reflection(board.get_board(), tetros, rnd);
+        renderer->draw_board(board.get_board());
+        renderer->draw_tetros(tetros, board.get_board());
+        renderer->draw_reflection(board.get_board(), tetros, *player.get_current_tetro());
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {

@@ -8,7 +8,6 @@
 #include <ctime>
 #include <cstdlib>
 #include "SDL2/SDL.h"
-#include "renderer.hpp"
 
 #define FPS 60
 #define FRAME_TIME 1000 / FPS

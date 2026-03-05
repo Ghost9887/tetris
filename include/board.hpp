@@ -8,11 +8,9 @@ class Board {
 public:
     Board();
     ~Board() = default;
-    void draw_board(SDL_Renderer *rnd);
-    std::vector<std::vector<Cell>> &get_board();
+    std::array<std::array<Cell, COLUMNS>, ROWS> &get_board();
 private:
-    std::vector<std::vector<Cell>> cells;
-    void draw_border(SDL_Renderer *rnd);
+    std::array<std::array<Cell, COLUMNS>, ROWS> board;
 };
 
 #endif

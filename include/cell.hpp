@@ -4,8 +4,8 @@
 #include "common.hpp"
 
 typedef struct {
+public:
     SDL_Rect rect;
-    bool active;
 }Cell;
 
 Cell create_cell(int x, int y);

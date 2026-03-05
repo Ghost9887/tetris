@@ -71,19 +71,7 @@ Tetro::Tetro(char id) :
     }
 }
 
-void Tetro::draw_tetros(const std::vector<Tetro> &tetros, SDL_Renderer *rnd, std::vector<std::vector<Cell>> &cells) {
-    for (int t = 0; t < tetros.size(); t++) {
-        SDL_SetRenderDrawColor(rnd, tetros.at(t).colour.r, tetros.at(t).colour.g, tetros.at(t).colour.b, tetros.at(t).colour.a);
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (tetros.at(t).shape[i][j] == 1) {
-                    SDL_RenderFillRect(rnd, &cells.at(tetros.at(t).row + i).at(tetros.at(t).column + j).rect);
-                    cells.at(tetros.at(t).row + i).at(tetros.at(t).column + j).active = true;
-                }
-            }
-        }
-    }
-}
+
 
 Tetro Tetro::create_random_tetro() {
     srand(time(0));
@@ -185,22 +173,6 @@ bool Tetro::is_fixed() {
     return fixed;
 }
 
-void Tetro::draw_reflection(const std::vector<std::vector<Cell>> &cells, const std::vector<Tetro> &tetros, SDL_Renderer *rnd) {
-    Tetro temp_tetro = *this;
-    while (!temp_tetro.check_collision(Down, tetros)) {
-        temp_tetro.row++;
-    } 
-    SDL_Rect rect = { temp_tetro.row, temp_tetro.column, CELL_SIZE, CELL_SIZE };
-    SDL_SetRenderDrawColor(rnd, temp_tetro.colour.r, temp_tetro.colour.g, temp_tetro.colour.b, temp_tetro.colour.a);
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (temp_tetro.shape[i][j] == 1) {
-                SDL_RenderDrawRect(rnd, &cells.at(temp_tetro.row + i).at(temp_tetro.column + j).rect);
-            }
-        }
-    }
-}
-
 int Tetro::get_value_in_shape(int i, int j) {
     return shape[i][j];
 }
@@ -217,6 +189,14 @@ int Tetro::get_column() {
     return column;
 }
 
+void Tetro::add_row() {
+    row++;
+}
+
+SDL_Colour Tetro::get_colour() {
+    return colour;
+}
+
 void Tetro::remove_empty_tetros(std::vector<Tetro> &tetros) {
     for (int t = 0; t < tetros.size(); t++) {
         int count = 0;
@@ -229,7 +209,6 @@ void Tetro::remove_empty_tetros(std::vector<Tetro> &tetros) {
     }
 }
 
-//TODO: Fix order is fucking me
 void Tetro::move_tetros_down(std::vector<Tetro> &tetros) {
 }
 
