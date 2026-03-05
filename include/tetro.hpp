@@ -9,11 +9,10 @@ public:
     Tetro(char id);
     ~Tetro() = default;
     static Tetro create_random_tetro();
-    static void move_tetros_down(std::vector<Tetro> &tetros);
-    static void remove_empty_tetros(std::vector<Tetro> &tetros);
-    void move(Direction dir, const std::vector<Tetro> &tetros);
-    void rotate(const std::vector<Tetro> &tetros);
-    void hard_drop(const std::vector<Tetro> &tetros);
+    void move(Direction dir, const std::array<std::array<Cell, COLUMNS>, ROWS> &board);
+    void rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board);
+    void hard_drop(const std::array<std::array<Cell, COLUMNS>, ROWS> &board);
+    void move_tetro_to_board(std::array<std::array<Cell, COLUMNS>, ROWS> &board);
     bool is_fixed();    
     int get_value_in_shape(int i, int j);
     void set_value_in_shape(int i, int j, int value);
@@ -27,7 +26,7 @@ private:
     char id;
     std::array<std::array<int, 4>, 4> shape;
     SDL_Color colour;
-    bool check_collision(Direction dir, const std::vector<Tetro> &tetros);
+    bool check_collision(Direction dir, const std::array<std::array<Cell, COLUMNS>, ROWS> &board);
     bool fixed;
     int rotation_state;
 };

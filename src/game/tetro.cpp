@@ -96,7 +96,7 @@ Tetro Tetro::create_random_tetro() {
     }
 }
 
-bool Tetro::check_collision(Direction dir, const std::vector<Tetro> &tetros) {
+bool Tetro::check_collision(Direction dir, const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
     int next_row = row;
     int next_column = column;
     switch (dir) {
@@ -125,22 +125,14 @@ bool Tetro::check_collision(Direction dir, const std::vector<Tetro> &tetros) {
                     return true;
                 }
                 //other tetros
-                for (int t = 0; t < tetros.size() - 1; t++) {
-                    for (int k = 0; k < 4; k++) {
-                        for (int l = 0; l < 4; l++) {
-                            if (tetros.at(t).shape[k][l] == 1) {
-                                int tetro_row = tetros.at(t).row + k;
-                                int tetro_column = tetros.at(t).column + l;
-                                if (current_next_row == tetro_row && current_next_column == tetro_column) {
-                                    if (dir == Down) {
-                                        fixed = true;
-                                    }
-                                    return true;
-                                }
-                            }
-                        }
+                /*
+                else if (board[current_next_row + i][current_next_column + j].active) {
+                    if (dir == Down) {
+                        fixed = true;
                     }
+                    return true;
                 }
+                */
             }
         }
     }
@@ -148,24 +140,35 @@ bool Tetro::check_collision(Direction dir, const std::vector<Tetro> &tetros) {
     return false;
 }
 
-void Tetro::move(Direction dir, const std::vector<Tetro> &tetros) {
+void Tetro::move_tetro_to_board(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (shape[i][j] == 1) {
+                board[row + i][column + j].active = true;
+                board[row + i][column + j].colour = colour;
+            }
+        }
+    }
+}
+
+void Tetro::move(Direction dir, const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
     switch (dir) {
         case Down:
-            if (!check_collision(Down, tetros)) row++;
+            if (!check_collision(Down, board)) row++;
             break;
         case Right:
-            if (!check_collision(Right, tetros)) column++;
+            if (!check_collision(Right, board)) column++;
             break;
         case Left:
-            if (!check_collision(Left, tetros)) column--;
+            if (!check_collision(Left, board)) column--;
             break;
         default: break;
     }
 }
 
-void Tetro::hard_drop(const std::vector<Tetro> &tetros) {
+void Tetro::hard_drop(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
     while (!fixed) {
-        if (!check_collision(Down, tetros)) row++;
+        if (!check_collision(Down, board)) row++;
     }
 }
 
@@ -197,22 +200,7 @@ SDL_Colour Tetro::get_colour() {
     return colour;
 }
 
-void Tetro::remove_empty_tetros(std::vector<Tetro> &tetros) {
-    for (int t = 0; t < tetros.size(); t++) {
-        int count = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (tetros.at(t).shape[i][j] == 1) count++;
-            }
-        }
-        if (count == 0) tetros.erase(tetros.begin() + t);
-    }
-}
-
-void Tetro::move_tetros_down(std::vector<Tetro> &tetros) {
-}
-
-void Tetro::rotate(const std::vector<Tetro> &tetros) {
+void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
 
     int original_row = row;
     int original_column = column;
@@ -227,7 +215,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
                     return;
                 }
@@ -239,7 +227,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 1, 0, 0},
                     {0, 1, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 1;
                     return;
                 }
@@ -256,7 +244,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
                     return;
                 }
@@ -268,7 +256,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 1, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 3;
                     return;
                 }
@@ -280,7 +268,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 4;
                     return;
                 }
@@ -292,7 +280,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {1, 1, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 1;
                     return;
                 }
@@ -309,7 +297,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
                     return;
                 }
@@ -321,7 +309,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 1, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 3;
                     return;
                 }
@@ -333,7 +321,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 4;
                     return;
                 }
@@ -345,7 +333,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {1, 1, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 1;
                     return;
                 }
@@ -362,7 +350,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {1, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
                     return;
                 }
@@ -374,7 +362,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 1;
                     return;
                 }
@@ -391,7 +379,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 1, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
                     return;
                 }
@@ -403,7 +391,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 1;
                     return;
                 }
@@ -420,7 +408,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {1, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
                     return;
                 }
@@ -432,7 +420,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 3;
                     return;
                 }
@@ -444,7 +432,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 1, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 4;
                     return;
                 }
@@ -456,7 +444,7 @@ void Tetro::rotate(const std::vector<Tetro> &tetros) {
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
-                if (!check_collision(Rotation, tetros)) {
+                if (!check_collision(Rotation, board)) {
                     rotation_state = 1;
                     return;
                 }

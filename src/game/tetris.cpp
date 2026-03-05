@@ -1,6 +1,6 @@
 #include "tetris.hpp"
 
-bool clear_row(std::vector<Tetro> &tetros, std::vector<std::vector<Cell>> &cells) {
+bool clear_row(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
     return false;
 }
 
@@ -9,7 +9,6 @@ void run(Renderer *renderer) {
     SDL_Texture *canvas = renderer->get_canvas();
     
     Board board;
-    Tetro tetro('i');
 
     SDL_Event event;
     bool running = true;
@@ -18,21 +17,14 @@ void run(Renderer *renderer) {
     Uint32 lastFallTime = SDL_GetTicks(); 
     const Uint32 fallDelay = 500;
     
-    Player player;
-    std::vector<Tetro> tetros;
-    tetros.push_back(Tetro::create_random_tetro());
-    player.set_current_tetro(&tetros.back());
+    Player player(Tetro::create_random_tetro());
 
     while (running) {
-        if (player.get_current_tetro()->is_fixed()) {
-            /*
-            if (clear_row(tetros, board.get_board())) {
-                Tetro::remove_empty_tetros(tetros);
-                Tetro::move_tetros_down(tetros);
+        if (player.get_current_tetro().is_fixed()) {
+            player.get_current_tetro().move_tetro_to_board(board.get_board());
+            if (clear_row(board.get_board())) {
             }
-            */
-            tetros.push_back(Tetro::create_random_tetro());
-            player.set_current_tetro(&tetros.back());
+            player.set_current_tetro(Tetro::create_random_tetro());
         }
 
         moved_down = false;
@@ -44,21 +36,21 @@ void run(Renderer *renderer) {
             }else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
-                        player.get_current_tetro()->hard_drop(tetros);
+                        player.get_current_tetro().hard_drop(board.get_board());
                         moved_down = true;
                         break;
                     case SDLK_r:
-                        player.get_current_tetro()->rotate(tetros);
+                        player.get_current_tetro().rotate(board.get_board());
                         break;
                     case SDLK_LEFT:
-                        player.get_current_tetro()->move(Left, tetros);
+                        player.get_current_tetro().move(Left, board.get_board());
                         break;
                     case SDLK_RIGHT:
-                        player.get_current_tetro()->move(Right, tetros);
+                        player.get_current_tetro().move(Right, board.get_board());
                         break;
                     case SDLK_DOWN:
                         if (!moved_down) {
-                            player.get_current_tetro()->move(Down, tetros);
+                            player.get_current_tetro().move(Down, board.get_board());
                             moved_down = true;
                         }
                         break;
@@ -71,13 +63,13 @@ void run(Renderer *renderer) {
         SDL_SetRenderDrawColor(rnd, 0, 0, 0, 255); 
         SDL_RenderClear(rnd);
 
+        renderer->draw_tetro(player.get_current_tetro(), board.get_board());
         renderer->draw_board(board.get_board());
-        renderer->draw_tetros(tetros, board.get_board());
-        renderer->draw_reflection(board.get_board(), tetros, *player.get_current_tetro());
+        renderer->draw_reflection(board.get_board(), player.get_current_tetro());
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {
-            player.get_current_tetro()->move(Down, tetros);
+            player.get_current_tetro().move(Down, board.get_board());
             lastFallTime = now;
         }
 

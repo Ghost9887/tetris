@@ -6,12 +6,12 @@
 
 class Player {
 public:
-    Player();
+    Player(Tetro tetro);
     ~Player() = default;
-    void set_current_tetro(Tetro *tetro);
-    Tetro *get_current_tetro();
+    void set_current_tetro(Tetro tetro);
+    Tetro &get_current_tetro();
 private:
-    Tetro *current_tetro;
+    Tetro current_tetro;
 };
 
 #endif

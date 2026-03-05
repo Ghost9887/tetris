@@ -12,8 +12,8 @@ public:
     SDL_Renderer *get_renderer();
     SDL_Texture *get_canvas();
     void draw_board(std::array<std::array<Cell, COLUMNS>, ROWS> &board);
-    void draw_tetros(std::vector<Tetro> &tetros, std::array<std::array<Cell, COLUMNS>, ROWS> &board);
-    void draw_reflection(std::array<std::array<Cell, COLUMNS>, ROWS> &cells, std::vector<Tetro> &tetros, Tetro &tetro);
+    void draw_tetro(Tetro &tetro, std::array<std::array<Cell, COLUMNS>, ROWS> &board);
+    void draw_reflection(std::array<std::array<Cell, COLUMNS>, ROWS> &cells, Tetro &tetro);
 private:
     SDL_Window *window;
     SDL_Renderer *rnd;
