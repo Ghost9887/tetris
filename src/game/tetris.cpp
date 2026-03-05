@@ -1,7 +1,20 @@
 #include "tetris.hpp"
 
-bool clear_row(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
-    return false;
+void clear_row(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
+    for (int row = 0; row < ROWS; row++) {
+        int count = 0;
+        for (int column = 0; column < COLUMNS; column++) {
+            if (!board[row][column].active) count++;
+        }
+        if (count == 0) {
+            for (int i = row; i >= 1;i--) {
+                for (int j = 0; j < COLUMNS; j++) {
+                    board[i][j].colour = board[i - 1][j].colour;
+                    board[i][j].active = board[i - 1][j].active;
+                }
+            }
+        }
+    }
 }
 
 void run(Renderer *renderer) {
