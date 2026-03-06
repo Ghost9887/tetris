@@ -11,11 +11,13 @@
 #include <queue>
 #include <optional>
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_ttf.h"
 
 #define FPS 60
 #define FRAME_TIME 1000 / FPS
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 800
+#define FONT_SIZE 16
 //MAIN GRID
 #define ROWS 20
 #define COLUMNS 10
@@ -40,7 +42,7 @@
 
 //score
 #define X_SCORE_PADDING X_PADDING - (CELL_SIZE * 4)
-#define Y_SCORE_PADDING (SCREEN_HEIGHT / 2) - ((ROWS * CELL_SIZE) / 2)
+#define Y_SCORE_PADDING (SCREEN_HEIGHT / 2) - ((ROWS * CELL_SIZE) / 2) - CELL_SIZE * 2
 
 typedef enum {
     Rotation,

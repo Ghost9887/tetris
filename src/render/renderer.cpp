@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 
 Renderer::Renderer() :
-    window(nullptr), rnd(nullptr), canvas(nullptr)
+    window(nullptr), rnd(nullptr), canvas(nullptr), font(nullptr)
 {
     window = SDL_CreateWindow(
         "tetris",
@@ -34,6 +34,16 @@ Renderer::Renderer() :
 
     if (canvas == nullptr)
         std::cout << "Failed to create canvas!" << '\n';
+    
+    if (TTF_Init() == -1) {
+        std::cout << "TTF_Init error: " << TTF_GetError() << std::endl;
+    }
+
+    font = TTF_OpenFont("../fonts/font.ttf", FONT_SIZE);
+
+    if (!font) {
+        std::cout << "SDL could not find font!\n";
+    }
 }
 
 SDL_Renderer *Renderer::get_renderer() {
@@ -42,6 +52,10 @@ SDL_Renderer *Renderer::get_renderer() {
 
 SDL_Texture *Renderer::get_canvas() {
     return canvas;
+}
+
+TTF_Font *Renderer::get_font() {
+    return font;
 }
 
 void Renderer::draw_border() {
@@ -122,6 +136,33 @@ void Renderer::draw_reserved_tetro(std::optional<Tetro> &tetro, std::array<std::
             }
         }
     }
+}
+
+void Renderer::draw_ui(int score) {
+    //score
+    std::string text = "Score: " + std::to_string(score);
+    SDL_Rect rect = { X_SCORE_PADDING, Y_SCORE_PADDING, static_cast<int>(text.length() * FONT_SIZE), 50 };
+    SDL_Color text_colour = { 255, 255, 255, 255 };
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text.c_str(), text_colour);
+    SDL_Texture *text_texture = SDL_CreateTextureFromSurface(rnd, surface);
+    SDL_RenderCopy(rnd, text_texture, NULL, &rect);
+
+    //next tetros
+    std::string next_text = "Next";
+    SDL_Rect next_rect = { X_NEXT_PADDING, Y_NEXT_PADDING - 40, static_cast<int>(next_text.length() * FONT_SIZE + 20), 50 };
+    SDL_Surface *next_surface = TTF_RenderText_Solid(font, next_text.c_str(), text_colour);
+    SDL_Texture *next_text_texture = SDL_CreateTextureFromSurface(rnd, next_surface);
+    SDL_RenderCopy(rnd, next_text_texture, NULL, &next_rect);
+
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(next_surface);
+    SDL_DestroyTexture(text_texture);
+    SDL_DestroyTexture(next_text_texture);
+
+    text_texture = nullptr;
+    next_text_texture = nullptr;
+    surface = nullptr;
+    next_surface = nullptr;
 }
 
 Renderer::~Renderer() {

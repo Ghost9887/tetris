@@ -1,6 +1,7 @@
 #include "tetris.hpp"
 
-void clear_row(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
+int clear_row(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
+    int amount_of_rows_cleared = 0;
     for (int row = 0; row < ROWS; row++) {
         int count = 0;
         for (int column = 0; column < COLUMNS; column++) {
@@ -15,6 +16,7 @@ void clear_row(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
             }
         }
     }
+    return amount_of_rows_cleared;
 }
 
 void run(Renderer *renderer) {
@@ -35,8 +37,20 @@ void run(Renderer *renderer) {
 
     while (running) {
         if (player.get_current_tetro().is_fixed()) {
+            player.add_score(1);
             player.get_current_tetro().move_tetro_to_board(board.get_board());
-            clear_row(board.get_board());
+            int count = clear_row(board.get_board());
+            if (count > 0) {
+                if (count == 1) {
+                    player.add_score(40);
+                }else if (count == 2) {
+                    player.add_score(100);
+                }else if (count == 3) {
+                    player.add_score(300);
+                }else {
+                    player.add_score(1200);
+                }
+            }
             player.get_next_tetro();
         }
 
@@ -51,6 +65,7 @@ void run(Renderer *renderer) {
                     case SDLK_SPACE:
                         player.get_current_tetro().hard_drop(board.get_board());
                         moved_down = true;
+                        player.add_score(1);
                         break;
                     case SDLK_UP:
                         player.get_current_tetro().rotate(board.get_board());
@@ -84,6 +99,7 @@ void run(Renderer *renderer) {
         renderer->draw_reflection(board.get_board(), player.get_current_tetro());
         renderer->draw_next_tetros(player.get_next_tetros(), board.get_next_board());
         renderer->draw_reserved_tetro(player.get_reserved_tetro(), board.get_reserved_board());
+        renderer->draw_ui(player.get_score());
 
         Uint32 now = SDL_GetTicks();
         if (now - lastFallTime >= fallDelay && !moved_down) {
