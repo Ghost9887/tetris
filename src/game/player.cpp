@@ -5,7 +5,9 @@ Player::Player(Tetro tetro) :
     next_tetros(), 
     reserved_tetro(std::nullopt), 
     reserved(false), 
-    score(0)
+    score(0),
+    rows_cleared(0),
+    level(1)
 {
     for (int i = 0; i < AMOUNT_OF_NEXT_TETROS; i++) {
         next_tetros.push(Tetro::create_random_tetro());
@@ -53,4 +55,12 @@ int Player::get_score() {
 
 void Player::add_score(int value) {
     score += value;
+}
+
+int Player::get_level() {
+    return level;
+}
+
+void Player::add_rows(int rows) {
+    rows_cleared += rows;
 }

@@ -8,6 +8,7 @@ int clear_row(std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
             if (!board[row][column].active) count++;
         }
         if (count == 0) {
+            amount_of_rows_cleared++;
             for (int i = row; i >= 1;i--) {
                 for (int j = 0; j < COLUMNS; j++) {
                     board[i][j].colour = board[i - 1][j].colour;
