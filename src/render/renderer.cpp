@@ -79,7 +79,6 @@ void Renderer::draw_tetro(Tetro &tetro, std::array<std::array<Cell, COLUMNS>, RO
 void Renderer::draw_reflection(std::array<std::array<Cell, COLUMNS>, ROWS> &board, Tetro &tetro) {
     Tetro temp_tetro = tetro;
     temp_tetro.hard_drop(board);
-    SDL_Rect rect = { temp_tetro.get_row(), temp_tetro.get_column(), CELL_SIZE, CELL_SIZE };
     SDL_SetRenderDrawColor(rnd, temp_tetro.get_colour().r, temp_tetro.get_colour().g, temp_tetro.get_colour().b, temp_tetro.get_colour().a);
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -93,7 +92,36 @@ void Renderer::draw_reflection(std::array<std::array<Cell, COLUMNS>, ROWS> &boar
 void Renderer::draw_reserved_tetro(Tetro &tetro) {
 }
 
-void Renderer::draw_next_tetros(std::queue<Tetro> &next_tetros) {
+void Renderer::draw_next_tetros(std::queue<Tetro> &next_tetros, std::array<std::array<Cell, NEXT_COLUMNS>, NEXT_ROWS> &next_board) {
+    std::queue<Tetro> temp = next_tetros;
+    int absolute_row = 0;
+    for (int i = 0; i < AMOUNT_OF_NEXT_TETROS; i++) {
+        Tetro tetro = temp.front();
+        temp.pop();
+
+        SDL_SetRenderDrawColor(rnd, tetro.get_colour().r, tetro.get_colour().g, tetro.get_colour().b, tetro.get_colour().a);
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 4; k++) {
+                if (tetro.get_value_in_shape(j, k) == 1) {
+                    SDL_RenderFillRect(rnd, &next_board.at(absolute_row + j).at(k).rect);
+                }
+            }
+        }
+        absolute_row += 4;
+    }
+}
+
+void Renderer::draw_reserved_tetro(std::optional<Tetro> &tetro, std::array<std::array<Cell, RESERVE_COLUMNS>, RESERVE_ROWS> &reserved_board) {
+    if (tetro.has_value()) {
+        SDL_SetRenderDrawColor(rnd, tetro.value().get_colour().r, tetro.value().get_colour().g, tetro.value().get_colour().b, tetro.value().get_colour().a);
+        for (int row = 0; row < RESERVE_ROWS; row++) {
+            for (int column = 0; column < RESERVE_COLUMNS; column++) {
+                if (tetro.value().get_value_in_shape(row, column) == 1) {
+                    SDL_RenderFillRect(rnd, &reserved_board.at(row).at(column).rect);
+                }
+            }
+        }
+    }
 }
 
 Renderer::~Renderer() {

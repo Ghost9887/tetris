@@ -1,6 +1,6 @@
 #include "player.hpp"
 
-Player::Player(Tetro tetro) : current_tetro(tetro), next_tetros(), reserve_tetro(std::nullopt), reserved(false) 
+Player::Player(Tetro tetro) : current_tetro(tetro), next_tetros(), reserved_tetro(std::nullopt), reserved(false) 
 {
     for (int i = 0; i < AMOUNT_OF_NEXT_TETROS; i++) {
         next_tetros.push(Tetro::create_random_tetro());
@@ -22,17 +22,21 @@ std::queue<Tetro> &Player::get_next_tetros() {
     return next_tetros;
 }
 
+std::optional<Tetro> &Player::get_reserved_tetro() {
+    return reserved_tetro;
+}
+
 void Player::reserve_current_tetro() {
     if (!reserved) {
-        if (!reserve_tetro.has_value()) {
-            reserve_tetro = current_tetro;
+        if (!reserved_tetro.has_value()) {
+            reserved_tetro = current_tetro;
             get_next_tetro();
         } else {
-            std::swap(current_tetro, reserve_tetro.value());
+            std::swap(current_tetro, reserved_tetro.value());
         }
 
-        reserve_tetro->set_row(0);
-        reserve_tetro->set_column(COLUMNS / 2);
+        reserved_tetro->set_row(0);
+        reserved_tetro->set_column(COLUMNS / 2);
 
         reserved = true;
     }

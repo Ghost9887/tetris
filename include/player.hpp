@@ -12,10 +12,11 @@ public:
     void get_next_tetro();
     void reserve_current_tetro();
     std::queue<Tetro> &get_next_tetros();
+    std::optional<Tetro> &get_reserved_tetro();
 private:
     Tetro current_tetro;
     std::queue<Tetro> next_tetros;
-    std::optional<Tetro> reserve_tetro;
+    std::optional<Tetro> reserved_tetro;
     bool reserved;
 };
 
