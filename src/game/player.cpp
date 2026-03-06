@@ -1,6 +1,11 @@
 #include "player.hpp"
 
-Player::Player(Tetro tetro) : current_tetro(tetro), next_tetros(), reserved_tetro(std::nullopt), reserved(false) 
+Player::Player(Tetro tetro) : 
+    current_tetro(tetro), 
+    next_tetros(), 
+    reserved_tetro(std::nullopt), 
+    reserved(false), 
+    score(0)
 {
     for (int i = 0; i < AMOUNT_OF_NEXT_TETROS; i++) {
         next_tetros.push(Tetro::create_random_tetro());
@@ -42,3 +47,10 @@ void Player::reserve_current_tetro() {
     }
 }
 
+int Player::get_score() {
+    return score;
+}
+
+void Player::add_score(int value) {
+    score += value;
+}

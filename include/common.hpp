@@ -38,6 +38,10 @@
 #define RESERVE_ROWS 4
 #define RESERVE_COLUMNS 4
 
+//score
+#define X_SCORE_PADDING X_PADDING - (CELL_SIZE * 4)
+#define Y_SCORE_PADDING (SCREEN_HEIGHT / 2) - ((ROWS * CELL_SIZE) / 2)
+
 typedef enum {
     Rotation,
     Down,
