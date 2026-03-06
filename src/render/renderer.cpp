@@ -138,7 +138,8 @@ void Renderer::draw_reserved_tetro(std::optional<Tetro> &tetro, std::array<std::
     }
 }
 
-void Renderer::draw_ui(int score) {
+//TODO: REFACTOR
+void Renderer::draw_ui(int score, int level) {
     //score
     std::string text = "Score: " + std::to_string(score);
     SDL_Rect rect = { X_SCORE_PADDING, Y_SCORE_PADDING, static_cast<int>(text.length() * FONT_SIZE), 50 };
@@ -154,15 +155,26 @@ void Renderer::draw_ui(int score) {
     SDL_Texture *next_text_texture = SDL_CreateTextureFromSurface(rnd, next_surface);
     SDL_RenderCopy(rnd, next_text_texture, NULL, &next_rect);
 
+    //level
+    std::string level_text = "Level: " + std::to_string(level);
+    SDL_Rect level_rect = { X_LEVEL_PADDING,  Y_LEVEL_PADDING, static_cast<int>(level_text.length()) * FONT_SIZE, 50 };
+    SDL_Surface *level_surface = TTF_RenderText_Solid(font, level_text.c_str(), text_colour);   
+    SDL_Texture *level_texture = SDL_CreateTextureFromSurface(rnd, level_surface);
+    SDL_RenderCopy(rnd, level_texture, NULL, &level_rect);
+
     SDL_FreeSurface(surface);
     SDL_FreeSurface(next_surface);
+    SDL_FreeSurface(level_surface);
     SDL_DestroyTexture(text_texture);
     SDL_DestroyTexture(next_text_texture);
+    SDL_DestroyTexture(level_texture);
 
     text_texture = nullptr;
     next_text_texture = nullptr;
+    level_texture = nullptr;
     surface = nullptr;
     next_surface = nullptr;
+    level_surface = nullptr;
 }
 
 Renderer::~Renderer() {

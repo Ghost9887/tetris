@@ -18,6 +18,8 @@
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 800
 #define FONT_SIZE 16
+
+//TODO: REFACTOR 
 //MAIN GRID
 #define ROWS 20
 #define COLUMNS 10
@@ -40,9 +42,13 @@
 #define RESERVE_ROWS 4
 #define RESERVE_COLUMNS 4
 
-//score
+//SCORE
 #define X_SCORE_PADDING X_PADDING - (CELL_SIZE * 4)
 #define Y_SCORE_PADDING (SCREEN_HEIGHT / 2) - ((ROWS * CELL_SIZE) / 2) - CELL_SIZE * 2
+
+//LEVEL
+#define X_LEVEL_PADDING X_SCORE_PADDING
+#define Y_LEVEL_PADDING Y_SCORE_PADDING - CELL_SIZE - 20
 
 typedef enum {
     Rotation,

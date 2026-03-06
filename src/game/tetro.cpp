@@ -16,18 +16,18 @@ Tetro::Tetro(char id) :
         case 'o':
             colour = { 255, 255, 0, 255 };
             shape = {{
+                {1, 1, 0, 0},
+                {1, 1, 0, 0},
                 {0, 0, 0, 0},
-                {0, 1, 1, 0},
-                {0, 1, 1, 0},
                 {0, 0, 0, 0}
             }};
             break;
         case 't':
             colour = { 255, 20, 147, 255 };
             shape = {{
-                {0, 0, 0, 0},
                 {0, 1, 0, 0},
                 {1, 1, 1, 0},
+                {0, 0, 0, 0},
                 {0, 0, 0, 0}
             }};
             break;
@@ -52,18 +52,18 @@ Tetro::Tetro(char id) :
         case 's':
             colour = { 0, 255, 0, 255 };
             shape = {{
-                {0, 0, 0, 0},
                 {0, 1, 1, 0},
                 {1, 1, 0, 0},
+                {0, 0, 0, 0},
                 {0, 0, 0, 0}
             }};
             break;
         case 'z':
             colour = { 255, 0, 0, 255 };
             shape = {{
-                {0, 0, 0, 0},
+                {1, 1, 0, 0},
                 {0, 1, 1, 0},
-                {0, 0, 1, 1},
+                {0, 0, 0, 0},
                 {0, 0, 0, 0}
             }};
             break;
@@ -104,7 +104,6 @@ bool Tetro::check_collision(Direction dir, const std::array<std::array<Cell, COL
             break;
         default: break;
     }
-    
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (shape[i][j] == 1) {
@@ -346,10 +345,10 @@ void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
         switch (rotation_state) {
             case 1:
                 shape = {{
-                    {0, 0, 0, 0},
-                    {0, 0, 1, 0},
-                    {0, 1, 1, 0},
-                    {0, 1, 0, 0}
+                    {0, 1, 0, 0},
+                    {1, 1, 0, 0},
+                    {1, 0, 0, 0},
+                    {0, 0, 0, 0}
                 }};
                 if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
@@ -358,9 +357,9 @@ void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
                 break;
             case 2:
                 shape = {{
-                    {0, 0, 0, 0},
+                    {1, 1, 0, 0},
                     {0, 1, 1, 0},
-                    {0, 0, 1, 1},
+                    {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
                 if (!check_collision(Rotation, board)) {
@@ -387,9 +386,9 @@ void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
                 break;
             case 2:
                 shape = {{
-                    {0, 0, 0, 0},
                     {0, 1, 1, 0},
                     {1, 1, 0, 0},
+                    {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
                 if (!check_collision(Rotation, board)) {
@@ -404,10 +403,10 @@ void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
         switch (rotation_state) {
             case 1:
                 shape = {{
-                    {0, 0, 0, 0},
                     {0, 1, 0, 0},
                     {0, 1, 1, 0},
-                    {0, 1, 0, 0}
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0}
                 }};
                 if (!check_collision(Rotation, board)) {
                     rotation_state = 2;
@@ -417,9 +416,9 @@ void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
             case 2:
                 shape = {{
                     {0, 0, 0, 0},
-                    {0, 0, 0, 0},
                     {1, 1, 1, 0},
-                    {0, 1, 0, 0}
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0}
                 }};
                 if (!check_collision(Rotation, board)) {
                     rotation_state = 3;
@@ -428,10 +427,10 @@ void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
                 break;
             case 3:
                 shape = {{
-                    {0, 0, 0, 0},
                     {0, 1, 0, 0},
                     {1, 1, 0, 0},
-                    {0, 1, 0, 0}
+                    {0, 1, 0, 0},
+                    {0, 0, 0, 0}
                 }};
                 if (!check_collision(Rotation, board)) {
                     rotation_state = 4;
@@ -440,9 +439,9 @@ void Tetro::rotate(const std::array<std::array<Cell, COLUMNS>, ROWS> &board) {
                 break;
             case 4:
                 shape = {{
-                    {0, 0, 0, 0},
                     {0, 1, 0, 0},
                     {1, 1, 1, 0},
+                    {0, 0, 0, 0},
                     {0, 0, 0, 0}
                 }};
                 if (!check_collision(Rotation, board)) {

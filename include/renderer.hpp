@@ -18,7 +18,7 @@ public:
     void draw_reserved_tetro(Tetro &tetro);
     void draw_next_tetros(std::queue<Tetro> &next_tetros, std::array<std::array<Cell, NEXT_COLUMNS>, NEXT_ROWS> &next_board);
     void draw_reserved_tetro(std::optional<Tetro> &tetro, std::array<std::array<Cell, RESERVE_COLUMNS>, RESERVE_ROWS> &reserve_board);
-    void draw_ui(int score);
+    void draw_ui(int score, int level);
 private: 
     SDL_Window *window;
     SDL_Renderer *rnd;
