@@ -63,7 +63,7 @@ int Player::get_level() {
 
 void Player::add_rows(int rows) {
     rows_cleared += rows;
-    if (rows_cleared >= 1 && level <= 20) {
+    if (rows_cleared >= 10 * level && level <= 20) {
         rows_cleared = rows_cleared % 10 * level;
         level++;
     }

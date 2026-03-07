@@ -32,12 +32,18 @@ void run(Renderer *renderer) {
     
     Uint32 last_fall_time = SDL_GetTicks(); 
     Uint32 fall_delay = 2000;
+    Uint32 game_start = SDL_GetTicks();
+    float game_time = 0.0f;
     
     Player player(Tetro::create_random_tetro());
     player.get_next_tetro();
 
     while (running) {
         if (player.get_current_tetro().is_fixed()) {
+            if (player.get_current_tetro().get_row() <= 0) {
+                std::cout << "Lost" << '\n';
+                return;
+            }
             player.add_score(1);
             player.get_current_tetro().move_tetro_to_board(board.get_board());
             int count = clear_row(board.get_board());
@@ -106,7 +112,7 @@ void run(Renderer *renderer) {
         renderer->draw_reflection(board.get_board(), player.get_current_tetro());
         renderer->draw_next_tetros(player.get_next_tetros(), board.get_next_board());
         renderer->draw_reserved_tetro(player.get_reserved_tetro(), board.get_reserved_board());
-        renderer->draw_ui(player.get_score(), player.get_level());
+        renderer->draw_ui(player.get_score(), player.get_level(), game_time);
 
         Uint32 now = SDL_GetTicks();
         if (now - last_fall_time >= fall_delay && !moved_down) {
@@ -121,6 +127,7 @@ void run(Renderer *renderer) {
         SDL_RenderPresent(rnd);
 
         Uint32 frame_time = SDL_GetTicks() - frame_start;
+        game_time = (SDL_GetTicks() - game_start) / 1000.0f;
         if (frame_time < FRAME_TIME)
             SDL_Delay(FRAME_TIME - frame_time);
     }

@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 
 Renderer::Renderer() :
-    window(nullptr), rnd(nullptr), canvas(nullptr), font(nullptr)
+    window(nullptr), rnd(nullptr), canvas(nullptr), font(nullptr), surface(nullptr)
 {
     window = SDL_CreateWindow(
         "tetris",
@@ -138,43 +138,39 @@ void Renderer::draw_reserved_tetro(std::optional<Tetro> &tetro, std::array<std::
     }
 }
 
+void Renderer::draw_text(std::string &text, int x_pos, int y_pos, SDL_Color &colour) {
+    int w, h;
+    TTF_SizeText(font, text.c_str(), &w, &h);
+    SDL_Rect rect = { x_pos, y_pos, w, h};
+
+    if (surface) surface = nullptr;
+    surface = TTF_RenderText_Solid(font, text.c_str(), colour);
+
+    canvas = SDL_CreateTextureFromSurface(rnd, surface);
+    SDL_RenderCopy(rnd, canvas, NULL, &rect);
+}
+
 //TODO: REFACTOR
-void Renderer::draw_ui(int score, int level) {
-    //score
-    std::string text = "Score: " + std::to_string(score);
-    SDL_Rect rect = { X_SCORE_PADDING, Y_SCORE_PADDING, static_cast<int>(text.length() * FONT_SIZE), 50 };
+void Renderer::draw_ui(int score, int level, float game_time) {
     SDL_Color text_colour = { 255, 255, 255, 255 };
-    SDL_Surface *surface = TTF_RenderText_Solid(font, text.c_str(), text_colour);
-    SDL_Texture *text_texture = SDL_CreateTextureFromSurface(rnd, surface);
-    SDL_RenderCopy(rnd, text_texture, NULL, &rect);
+
+    //score
+    std::string score_text = "Score: " + std::to_string(score);
+    draw_text(score_text, X_SCORE_PADDING, Y_SCORE_PADDING, text_colour);
 
     //next tetros
     std::string next_text = "Next";
-    SDL_Rect next_rect = { X_NEXT_PADDING, Y_NEXT_PADDING - 40, static_cast<int>(next_text.length() * FONT_SIZE + 20), 50 };
-    SDL_Surface *next_surface = TTF_RenderText_Solid(font, next_text.c_str(), text_colour);
-    SDL_Texture *next_text_texture = SDL_CreateTextureFromSurface(rnd, next_surface);
-    SDL_RenderCopy(rnd, next_text_texture, NULL, &next_rect);
+    draw_text(next_text, X_NEXT_TEXT_PADDING, Y_NEXT_TEXT_PADDING, text_colour);
 
     //level
     std::string level_text = "Level: " + std::to_string(level);
-    SDL_Rect level_rect = { X_LEVEL_PADDING,  Y_LEVEL_PADDING, static_cast<int>(level_text.length()) * FONT_SIZE, 50 };
-    SDL_Surface *level_surface = TTF_RenderText_Solid(font, level_text.c_str(), text_colour);   
-    SDL_Texture *level_texture = SDL_CreateTextureFromSurface(rnd, level_surface);
-    SDL_RenderCopy(rnd, level_texture, NULL, &level_rect);
+    draw_text(level_text, X_LEVEL_PADDING, Y_LEVEL_PADDING, text_colour);
 
-    SDL_FreeSurface(surface);
-    SDL_FreeSurface(next_surface);
-    SDL_FreeSurface(level_surface);
-    SDL_DestroyTexture(text_texture);
-    SDL_DestroyTexture(next_text_texture);
-    SDL_DestroyTexture(level_texture);
-
-    text_texture = nullptr;
-    next_text_texture = nullptr;
-    level_texture = nullptr;
-    surface = nullptr;
-    next_surface = nullptr;
-    level_surface = nullptr;
+    //time
+    char buffer[32];
+    sprintf(buffer, "Time: %.1f", game_time);
+    std::string time_text = buffer;
+    draw_text(time_text, X_TIME_PADDING, Y_TIME_PADDING, text_colour);
 }
 
 Renderer::~Renderer() {
